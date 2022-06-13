@@ -1,0 +1,13 @@
+[Unit]
+Description=Update of system timer
+After=network.target local-fs.target
+Wants=network-online.target
+Conflicts=transactional-update.timer
+
+[Timer]
+OnCalendar=daily
+AccuracySec=1m
+RandomizedDelaySec=2h
+
+[Install]
+WantedBy=timers.target

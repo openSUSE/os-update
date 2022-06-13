@@ -1,0 +1,8 @@
+[Unit]
+Description=Update of system
+Wants=network.target network-online.target
+After=network.target local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=@libexec@/os-update

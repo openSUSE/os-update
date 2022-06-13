@@ -1,0 +1,192 @@
+#!/bin/bash
+#
+# Copyright (C) 2020 Thorsten Kukuk <kukuk@thkukuk.de>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+export LANG=C.UTF-8
+
+log_error()
+{
+    echo "$@" >&2
+    logger --priority user.err "$@"
+}
+
+log_info()
+{
+    echo "$@"
+    logger "$@"
+}
+
+usage() {
+    echo "Syntax: os-update"
+    echo ""
+    echo "Update the system with automatic reboot if required."
+    echo ""
+    echo "Options:"
+    echo "--help, -h                 Display this help and exit"
+    echo "--version                  Display version and exit"
+}
+
+print_version() {
+    echo "os-update @VERSION@"
+}
+
+check_and_reboot() {
+    needs-restarting -r
+    if [ $? -eq 1 ]; then
+	case "$REBOOT_CMD" in
+	    "auto")
+		if [ -x /usr/sbin/rebootmgrctl ]; then
+		    /usr/sbin/rebootmgrctl is-active -q
+		    if [ $? -eq 0 ]; then
+			/usr/sbin/rebootmgrctl reboot
+		    else
+			systemctl reboot
+		    fi
+		else
+		    systemctl reboot
+		fi
+		;;
+	    "rebootmgr")
+		if [ -x /usr/sbin/rebootmgrctl ]; then
+		    log_error "ERROR: rebootmgrctl not installed"
+		    exit 1
+		fi
+		/usr/sbin/rebootmgrctl is-active -q
+		if [ $? -eq 0 ]; then
+		    log_error "ERROR: rebootmgrd not running"
+		    exit 1
+		fi
+		/usr/sbin/rebootmgrctl reboot
+		;;
+	    "reboot")
+		systemctl reboot
+		;;
+	esac
+    fi
+}
+
+eval_zypper_retval() {
+    RETVAL=$1
+
+    if [ $RETVAL -eq 0 ] || [ $RETVAL -eq 102 ] || [ $RETVAL -eq 103 ]; then
+	log_info "Update was successful"
+    else
+	log_error "ERROR: update failed, exit code was ${RETVAL}"
+	exit 1
+    fi
+}
+
+zypper_security() {
+    zypper patch ${ZYPPER_NONINTERACTIVE} --category security
+    eval_zypper_retval $?
+}
+
+zypper_up() {
+    zypper up ${ZYPPER_NONINTERACTIVE}
+    eval_zypper_retval $?
+}
+
+zypper_dup() {
+    zypper dup ${ZYPPER_NONINTERACTIVE}
+    eval_zypper_retval $?
+}
+
+run_zypper() {
+
+    case "$UPDATE_CMD" in
+	auto)
+	    . /etc/os-release
+	    case "$NAME" in
+		"SLES")
+		    zypper_up
+		    ;;
+		"openSUSE Tumbleweed")
+		    zypper_dup
+		    ;;
+		*)
+		    log_error "ERROR: your OS is not supported in 'auto' mode"
+		    ;;
+	    esac
+	    ;;
+	dup)
+	    zypper_dup
+	    ;;
+	up)
+	    zypper_up
+	    ;;
+	security)
+	    zypper_security
+	    ;;
+	*)
+	    log_error "ERROR: UPDATE_CMD ($UPDATE_CMD) unknown"
+	    exit 1
+	    ;;
+    esac
+}
+
+#
+# Main
+#
+
+while true; do
+    if [ $# -eq 0 ]; then
+        break
+    fi
+
+    case "$1" in
+	-h|--help)
+            usage
+	    exit 0
+            ;;
+        --version)
+            print_version
+	    exit 0
+            ;;
+        *)
+            usage
+	    exit 1
+            ;;
+    esac
+done
+
+if [ $# -ne 0 ]; then
+    usage
+    exit 1
+fi
+
+# Read configuration variables
+# Default variables
+PKG_MANAGER="zypper"
+UPDATE_CMD="auto"
+REBOOT_CMD="auto"
+
+# Additional variables per package manager
+ZYPPER_NONINTERACTIVE="-y --auto-agree-with-product-licenses"
+
+# Overwrite with vendor specific values if exist:
+if [ -e /usr/etc/os-update.conf ]; then
+  . /usr/etc/os-update.conf
+fi
+# Overwrite with admin specific values if exist:
+if [ -e /etc/os-update.conf ]; then
+  . /etc/os-update.conf
+fi
+
+run_${PKG_MANAGER}
+
+check_and_reboot
+
+exit 0
