@@ -110,7 +110,7 @@ run_zypper() {
 	auto)
 	    . /etc/os-release
 	    case "$NAME" in
-		"SLES")
+		"SLES"|"openSUSE Leap")
 		    zypper_up
 		    ;;
 		"openSUSE Tumbleweed")
