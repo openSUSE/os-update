@@ -1,3 +1,6 @@
+Version 1.2
+ - Support restart of updated services
+
 Version 1.1
  - Documentation update
  - Add openSUSE Leap
