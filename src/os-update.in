@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2020 Thorsten Kukuk <kukuk@thkukuk.de>
+# Copyright (C) 2020-2022 Thorsten Kukuk <kukuk@thkukuk.de>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export LANG=C.UTF-8
+
+# Default variables
+PKG_MANAGER="zypper"
+UPDATE_CMD="auto"
+REBOOT_CMD="auto"
+RESTART_SERVICES="yes"
+IGNORE_SERVICES_FROM_RESTART="udev dbus"
+
+# Additional variables per package manager
+ZYPPER_NONINTERACTIVE="-y --auto-agree-with-product-licenses"
+
 
 log_error()
 {
@@ -81,7 +92,7 @@ check_and_reboot() {
 eval_zypper_retval() {
     RETVAL=$1
 
-    if [ $RETVAL -eq 0 ] || [ $RETVAL -eq 102 ] || [ $RETVAL -eq 103 ]; then
+    if [ "$RETVAL" -eq 0 ] || [ "$RETVAL" -eq 102 ] || [ "$RETVAL" -eq 103 ]; then
 	log_info "Update was successful"
     else
 	log_error "ERROR: update failed, exit code was ${RETVAL}"
@@ -102,6 +113,21 @@ zypper_up() {
 zypper_dup() {
     zypper dup ${ZYPPER_NONINTERACTIVE}
     eval_zypper_retval $?
+}
+
+zypper_restart_services() {
+    for service in $(zypper ps --print %s); do
+        for ignore in $IGNORE_SERVICES_FROM_RESTART; do
+            if [ "$ignore" = "$service" ]; then
+                log_info "Not restarting $service as it is excluded in IGNORE_SERVICES_FROM_RESTART"
+		break
+	    fi
+	done
+        if [ "$ignore" != "$service" ]; then
+	    log_info "Restarting $service"
+            systemctl try-restart "$service".service
+	fi
+    done
 }
 
 run_zypper() {
@@ -168,13 +194,6 @@ if [ $# -ne 0 ]; then
 fi
 
 # Read configuration variables
-# Default variables
-PKG_MANAGER="zypper"
-UPDATE_CMD="auto"
-REBOOT_CMD="auto"
-
-# Additional variables per package manager
-ZYPPER_NONINTERACTIVE="-y --auto-agree-with-product-licenses"
 
 # Overwrite with vendor specific values if exist:
 if [ -e /usr/etc/os-update.conf ]; then
@@ -186,6 +205,12 @@ if [ -e /etc/os-update.conf ]; then
 fi
 
 run_${PKG_MANAGER}
+
+case "$RESTART_SERVICES" in
+    [yY]*)
+	zypper_restart_services
+	;;
+esac
 
 check_and_reboot
 
