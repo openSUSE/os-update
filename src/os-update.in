@@ -60,8 +60,7 @@ check_and_reboot() {
 	case "$REBOOT_CMD" in
 	    "auto")
 		if [ -x /usr/sbin/rebootmgrctl ]; then
-		    /usr/sbin/rebootmgrctl is-active -q
-		    if [ $? -eq 0 ]; then
+		    if ! /usr/sbin/rebootmgrctl is-active -q; then
 			/usr/sbin/rebootmgrctl reboot
 		    else
 			systemctl reboot
@@ -75,8 +74,7 @@ check_and_reboot() {
 		    log_error "ERROR: rebootmgrctl not installed"
 		    exit 1
 		fi
-		/usr/sbin/rebootmgrctl is-active -q
-		if [ $? -eq 0 ]; then
+		if ! /usr/sbin/rebootmgrctl is-active -q; then
 		    log_error "ERROR: rebootmgrd not running"
 		    exit 1
 		fi
@@ -123,7 +121,7 @@ zypper_restart_services() {
 		break
 	    fi
 	done
-        if [ "$ignore" != "$service" ]; then
+        if [ "$ignore" != "$service" ] && [ "$service" != "os-update" ]; then
 	    log_info "Restarting $service"
             systemctl try-restart "$service".service
 	fi
