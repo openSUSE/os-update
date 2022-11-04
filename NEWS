@@ -1,3 +1,6 @@
+Version 1.3
+ - Don't restart os-update service itself
+
 Version 1.2
  - Support restart of updated services
 
