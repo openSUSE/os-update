@@ -1,0 +1,11 @@
+[Unit]
+Description=Send status mail for %i
+Documentation=https://wiki.archlinux.org/title/Systemd/Timers#MAILTO
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/usr/etc/default/systemd-status-mail
+EnvironmentFile=-/etc/default/systemd-status-mail
+ExecStart=/usr/libexec/systemd-status-mail ${ADDRESS} %i
+User=nobody
+Group=systemd-journal

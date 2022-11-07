@@ -4,4 +4,4 @@ SUBDIRS = src systemd
 
 CLEANFILES = *~
 
-EXTRA_DIST = README.md COPYING
+EXTRA_DIST = README.md COPYING etc/default/systemd-status-mail

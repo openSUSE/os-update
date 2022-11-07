@@ -1,0 +1,12 @@
+# ADDRESS is the mail account to which the status mails should be send
+ADDRESS=root@localhost
+
+# Set HOSTNAME if the system does not set it or if you need to override 
+# the system default
+#HOSTNAME=myhostname
+
+# Valid values for MAILER: "sendmail" or "mailx"
+#MAILER=mailx
+
+# RELAYHOST specifies the mail relay used by mailx if specified
+#RELAYHOST=relay.example.com

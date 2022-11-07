@@ -52,4 +52,5 @@ Makefile
 os-update-*.tar.*
 src/os-update
 src/os-update.8
+src/systemd-status-mail.8
 systemd/os-update.service

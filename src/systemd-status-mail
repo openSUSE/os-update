@@ -1,0 +1,52 @@
+#!/bin/sh
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <mail address> <systemd unit>" >&2
+    exit 1
+fi
+
+if [ -z "$1" ]; then
+    echo "$0: <mail address> is empty!" >&2
+    exit 1
+fi
+
+include () {
+    test -f "$1" && . "$1"
+}
+
+include /usr/etc/default/systemd-status-mail
+include /etc/default/systemd-status-mail
+
+HOSTNAME=${HOSTNAME:-$(hostname)}
+
+if [ -z "${MAILER}" ]; then
+    if [ -x /usr/sbin/sendmail ]; then
+	MAILER="sendmail"
+    elif [ -x /usr/bin/mailx ]; then
+	MAILER="mailx"
+    else
+	echo "ERROR: $0 - no mail program found!" >&2
+    fi
+fi
+
+case $MAILER in
+    sendmail)
+	/usr/sbin/sendmail -t <<EOF
+To: $1
+From: systemd <root@$HOSTNAME>
+Subject: $2 ($HOSTNAME)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+
+$(systemctl status --full "$2")
+EOF
+	;;
+    mailx)
+	if [ -n "${RELAYHOST}" ]; then
+	    RELAY="-Ssmtp=${RELAYHOST}"
+	fi
+	mailx -Ssendwait -s "$2 ($HOSTNAME)" -r "systemd <root@$HOSTNAME>" "$RELAY" "$1" <<EOF
+$(systemctl status --full "$2")
+EOF
+	;;
+esac

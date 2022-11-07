@@ -55,4 +55,4 @@ were changed by the system administrator compared to the vendor configuration
 file.
 
 # SEE ALSO
-systemd.timer(5)
+systemd.timer(5), systemd-status-mail(8)

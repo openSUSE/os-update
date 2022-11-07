@@ -1,7 +1,14 @@
 
-systemdsystemunit_DATA = os-update.timer os-update.service
+systemdsystemunit_DATA = os-update.timer os-update.service \
+			 systemd-status-mail@.service
 
-EXTRA_DIST = os-update.timer os-update.service.in
+maildatadir=${datadir}/systemd-status-mail
+
+
+maildata_DATA = status-mail.conf
+
+EXTRA_DIST = os-update.timer os-update.service.in status-mail.conf \
+	     systemd-status-mail@.service
 
 CLEANFILES = os-update.service
 
