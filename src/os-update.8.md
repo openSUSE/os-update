@@ -1,4 +1,4 @@
-% os-update(1)
+% os-update(8)
 % Thorsten Kukuk `<kukuk@thkukuk.de>`
 
 # NAME
