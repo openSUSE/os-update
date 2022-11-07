@@ -1,3 +1,6 @@
+Version 1.4
+ - Provide service to send mails about systemd service status
+
 Version 1.3
  - Don't restart os-update service itself
 
