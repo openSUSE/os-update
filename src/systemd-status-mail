@@ -38,7 +38,7 @@ Subject: $2 ($HOSTNAME)
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset=UTF-8
 
-$(systemctl status --full "$2")
+$(systemctl status --lines=500 --full "$2")
 EOF
 	;;
     mailx)
@@ -46,7 +46,7 @@ EOF
 	    RELAY="-Ssmtp=${RELAYHOST}"
 	fi
 	mailx -Ssendwait -s "$2 ($HOSTNAME)" -r "systemd <root@$HOSTNAME>" "$RELAY" "$1" <<EOF
-$(systemctl status --full "$2")
+$(systemctl status --lines=500 --full "$2")
 EOF
 	;;
 esac
