@@ -1,3 +1,6 @@
+Version 1.4.1
+ - Increase limit of lines from log in status mail to 500
+
 Version 1.4
  - Provide service to send mails about systemd service status
 
