@@ -13,6 +13,9 @@ to update only packages (e.g. `zypper up` for something like
 *SUSE Linux Enterprise*) or to apply only security updates
 (e.g. `zypper patch --category security`).
 
+Additional there is a tool `systemd-mail-status` which implements "MAILTO of cron for systemd timer". It is called by `systemd-status-mail@.service` if the service is configured for the 
+**OnFailure** and/or **OnSuccess** case of a systemd unit. It sends an email to a configureable address with the name of the service, the hostname and the output of `systemctl status --full <service>`.
+
 ## CONFIGURATION OPTIONS
 
 **UPDATE_CMD**="auto" - Specifies how to update the system. Valid values are "auto", "dup", "up" and
