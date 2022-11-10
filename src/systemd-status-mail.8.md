@@ -4,6 +4,7 @@
 # NAME
 
 **systemd-status-mail** - Send a mail if a systemd.timer fails
+
 # SYNOPSIS
 
 | **/usr/libexec/systemd-status-mail**
