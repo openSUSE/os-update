@@ -1,3 +1,7 @@
+Version 1.4.2
+ - Fixes for openSUSE Leap
+ - Add docu URLs to service files
+
 Version 1.4.1
  - Increase limit of lines from log in status mail to 500
 
