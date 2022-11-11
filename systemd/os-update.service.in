@@ -1,5 +1,7 @@
 [Unit]
 Description=Update of system
+Documentation=man:os-update(8)
+Documentation=https://manpages.opensuse.org/os-update.8
 Wants=network.target network-online.target
 After=network.target local-fs.target
 

@@ -1,11 +1,13 @@
 [Unit]
 Description=Send status mail for %i
+Documentation=man:systemd-status-mail(8)
+Documentation=https://manpages.opensuse.org/systemd-status-mail.8
 Documentation=https://wiki.archlinux.org/title/Systemd/Timers#MAILTO
 
 [Service]
 Type=oneshot
 EnvironmentFile=-/usr/etc/default/systemd-status-mail
 EnvironmentFile=-/etc/default/systemd-status-mail
-ExecStart=/usr/libexec/systemd-status-mail ${ADDRESS} %i
+ExecStart=@libexec@/systemd-status-mail ${ADDRESS} %i
 User=nobody
 Group=systemd-journal
