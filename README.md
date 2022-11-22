@@ -21,11 +21,11 @@ Additional there is a tool `systemd-mail-status` which implements "MAILTO of cro
 **UPDATE_CMD**="auto" - Specifies how to update the system. Valid values are "auto", "dup", "up" and
 "security". "auto" will select the best fitting command depending on the OS.
 
-**REBOOT_CMD**="auto" - Specifies how the system will be rebooted in case an update requires this. Valid values are "auto", "rebootmgr" and "reboot". "auto" will use rebootmgr if installed and running, else `systemctl reboot`.
+**REBOOT_CMD**="auto" - Specifies how the system will be rebooted in case an update requires this. Valid values are "auto", "rebootmgr", "reboot" and "none". "auto" will use rebootmgr if installed and running, else `systemctl reboot`. "none" will only print an informative message that a reboot is required, but not trigger any.
 
 **RESTART_SERVICES**="yes" - Specifies if after a successful update services should automatically restarted, if they are still using old libraries.
 
-**IGNORE_SERVICES_FROM_RESTART**="udev dbus" - Specifies a list of services which should not be restarted
+**IGNORE_SERVICES_FROM_RESTART**="dbus" - Specifies a list of services which should not be restarted
 
 ## CONFIGURATION FILES
 **/usr/etc/os-update.conf** - Vendor provided configuration file, contains the defaults.

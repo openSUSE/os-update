@@ -43,7 +43,7 @@ RESTART_SERVICES="yes"
 : Specifies if after a successful update services should automatically
 restarted, if they are still using old libraries.
 
-IGNORE_SERVICES_FROM_RESTART="udev dbus"
+IGNORE_SERVICES_FROM_RESTART="dbus"
 : Specifies a list of services which should not be restarted
 
 # CONFIGURATION FILES
