@@ -83,6 +83,9 @@ check_and_reboot() {
 	    "reboot")
 		systemctl reboot
 		;;
+	    "no"|"none")
+		log_info "A reboot is required"
+		;;
 	esac
     fi
 }

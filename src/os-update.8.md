@@ -34,8 +34,10 @@ UPDATE_CMD="auto"
 
 REBOOT_CMD="auto"
 : Specifies how the system will be rebooted in case an update requires
-this. Valid values are "auto", "rebootmgr" and "reboot". "auto" will use
-rebootmgr if installed and running, else `systemctl reboot`.
+this. Valid values are "auto", "rebootmgr", "reboot" and "none". "auto" will
+use rebootmgr if installed and running, else `systemctl reboot`. "none" will
+only print an informative message that a reboot is required, but not trigger
+any.
 
 RESTART_SERVICES="yes"
 : Specifies if after a successful update services should automatically
