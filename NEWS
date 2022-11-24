@@ -1,3 +1,7 @@
+Version 1.5
+ - Restart udev after update by default
+ - Support REBOOT_CMD="none"
+
 Version 1.4.2
  - Fixes for openSUSE Leap
  - Add docu URLs to service files
