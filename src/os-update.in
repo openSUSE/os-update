@@ -117,6 +117,10 @@ zypper_dup() {
 }
 
 zypper_restart_services() {
+    if [[ $(lsof -w -a -d DEL -p 1 -Ff  | grep "^fDEL"|wc -l) > 0 ]]; then
+        log_info "Reexecing systemd"
+        systemctl daemon-reexec;
+    fi
     for service in $(zypper ps --print %s); do
         for ignore in $IGNORE_SERVICES_FROM_RESTART; do
             if [ "$ignore" = "$service" ]; then
