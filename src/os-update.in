@@ -60,7 +60,7 @@ check_and_reboot() {
 	case "$REBOOT_CMD" in
 	    "auto")
 		if [ -x /usr/sbin/rebootmgrctl ]; then
-		    if ! /usr/sbin/rebootmgrctl is-active -q; then
+		    if /usr/sbin/rebootmgrctl is-active -q; then
 			/usr/sbin/rebootmgrctl reboot
 		    else
 			systemctl reboot
