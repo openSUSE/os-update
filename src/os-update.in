@@ -57,7 +57,7 @@ print_version() {
 
 check_and_reboot() {
     needs-restarting -r
-    if [ ( $? -eq 1 ) -o ( "$reboottrigger" = "yes" ) ]; then
+    if [ $? -eq 1 ] || [ "$reboottrigger" = "yes" ]; then
 	case "$REBOOT_CMD" in
 	    "auto")
 		if [ -x /usr/sbin/rebootmgrctl ]; then
