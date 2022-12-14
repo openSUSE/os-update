@@ -46,6 +46,9 @@ restarted, if they are still using old libraries.
 IGNORE_SERVICES_FROM_RESTART="dbus"
 : Specifies a list of services which should not be restarted
 
+SERVICES_TRIGGERING_REBOOT="dbus"
+: Specifies a list of services which trigger a reboot
+
 # CONFIGURATION FILES
 
 /usr/etc/os-update.conf
