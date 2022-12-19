@@ -1,5 +1,9 @@
+Version 1.7
+ - Fix detection of running rebootmgrd
+ - Add SERVICES_TRIGGERING_REBOOT (#2)
+
 Version 1.6
- - restart systemd if necessary
+ - Restart systemd if necessary
 
 Version 1.5
  - Restart udev after update by default
