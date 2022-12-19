@@ -23,6 +23,7 @@ UPDATE_CMD="auto"
 REBOOT_CMD="auto"
 RESTART_SERVICES="yes"
 IGNORE_SERVICES_FROM_RESTART="dbus"
+SERVICES_TRIGGERING_REBOOT="dbus"
 
 # Additional variables per package manager
 ZYPPER_NONINTERACTIVE="-y --auto-agree-with-product-licenses"
@@ -56,7 +57,7 @@ print_version() {
 
 check_and_reboot() {
     needs-restarting -r
-    if [ $? -eq 1 ]; then
+    if [ $? -eq 1 ] || [ "$reboottrigger" = "yes" ]; then
 	case "$REBOOT_CMD" in
 	    "auto")
 		if [ -x /usr/sbin/rebootmgrctl ]; then
@@ -121,7 +122,15 @@ zypper_restart_services() {
         log_info "Reexecing systemd"
         systemctl daemon-reexec;
     fi
+    reboottrigger="no"
     for service in $(zypper ps --print %s); do
+        for rebootservice in $SERVICES_TRIGGERING_REBOOT; do
+            if [ "$rebootservice" = "$service" ]; then
+                log_info "$service triggers a reboot as it is excluded in SERVICES_TRIGGERING_REBOOT"
+		reboottrigger="yes"
+		break
+	    fi
+	done
         for ignore in $IGNORE_SERVICES_FROM_RESTART; do
             if [ "$ignore" = "$service" ]; then
                 log_info "Not restarting $service as it is excluded in IGNORE_SERVICES_FROM_RESTART"
