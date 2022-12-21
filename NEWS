@@ -1,3 +1,6 @@
+Version 1.8
+ - Allow to specify additional options for mailx
+
 Version 1.7
  - Fix detection of running rebootmgrd
  - Add SERVICES_TRIGGERING_REBOOT (#2)
