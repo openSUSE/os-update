@@ -7,7 +7,7 @@ AC_SUBST(PACKAGE)
 AC_SUBST(VERSION)
 
 AC_ARG_ENABLE([vendordir],
-  AS_HELP_STRING([--enable-vendordir=DIR], [Direcotry for distribution provided configuration files]),,
+  AS_HELP_STRING([--enable-vendordir=DIR], [Directory for configuration files provided by the distribution]),,
   []
 )
 AC_SUBST([vendordir], [$enable_vendordir])
