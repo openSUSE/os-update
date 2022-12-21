@@ -45,8 +45,12 @@ EOF
 	if [ -n "${RELAYHOST}" ]; then
 	    RELAY="-Ssmtp=${RELAYHOST}"
 	fi
-	mailx -Ssendwait -s "$2 ($HOSTNAME)" -r "systemd <root@$HOSTNAME>" "$RELAY" "$1" <<EOF
+	mailx $MAILX_OPTIONS -Ssendwait -s "$2 ($HOSTNAME)" -r "systemd <root@$HOSTNAME>" "$RELAY" "$1" <<EOF
 $(systemctl status --lines=500 --full "$2")
 EOF
+	;;
+    *)
+	echo "ERROR: \"$MAILER\" is not a valid entry!" >&2
+	echo "       Only \"sendmail\" and \"mailx\" are." >&2
 	;;
 esac

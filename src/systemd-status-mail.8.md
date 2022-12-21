@@ -31,7 +31,10 @@ MAILER="sendmail"
 and "mailx", by default "sendmail" is used.
 
 RELAYHOST=""
-: Mail relay used by mailx if specified and not empty.
+: Mail relay used by mailx(1) if specified and not empty.
+
+MAILX_OPTIONS=""
+: Additional options passed to mailx(1)
 
 # CONFIGURATION FILES
 
@@ -57,4 +60,4 @@ OnFailure=systemd-status-mail@%n.service
 Everytime the os-update.service fails, a mail is send.
 
 # SEE ALSO
-os-update(8)
+os-update(8), mailx(1), sendmail(1), postfix(1)

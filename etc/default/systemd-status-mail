@@ -10,3 +10,6 @@ ADDRESS=root@localhost
 
 # RELAYHOST specifies the mail relay used by mailx if specified
 #RELAYHOST=relay.example.com
+
+# MAILX_OPTIONS specifies additional options for mailx
+#MAILX_OPTIONS="-Sverbose ..."
