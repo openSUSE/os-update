@@ -27,6 +27,8 @@ Additional there is a tool `systemd-mail-status` which implements "MAILTO of cro
 
 **IGNORE_SERVICES_FROM_RESTART**="dbus" - Specifies a list of services which should not be restarted
 
+**SERVICES_TRIGGERING_REBOOT**="dbus" : Specifies a list of services which trigger a reboot
+
 ## CONFIGURATION FILES
 **/usr/etc/os-update.conf** - Vendor provided configuration file, contains the defaults.
 
