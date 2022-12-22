@@ -126,7 +126,7 @@ zypper_restart_services() {
     for service in $(zypper ps --print %s); do
         for rebootservice in $SERVICES_TRIGGERING_REBOOT; do
             if [ "$rebootservice" = "$service" ]; then
-                log_info "$service triggers a reboot as it is excluded in SERVICES_TRIGGERING_REBOOT"
+                log_info "$service triggers a reboot as it is included in SERVICES_TRIGGERING_REBOOT"
 		reboottrigger="yes"
 		break
 	    fi
