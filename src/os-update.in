@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2020-2022 Thorsten Kukuk <kukuk@thkukuk.de>
+# Copyright (C) 2020-2023 Thorsten Kukuk <kukuk@thkukuk.de>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -56,8 +56,23 @@ print_version() {
 }
 
 check_and_reboot() {
-    needs-restarting -r
-    if [ $? -eq 1 ] || [ "$reboottrigger" = "yes" ]; then
+    if [ -x /usr/bin/needs-restarting ]; then
+        needs-restarting -r
+	if [ $? -eq 1 ] ; then
+	    reboottrigger = "yes"
+	fi
+    else
+        release=$(uname -r)
+        flavor=${release##*-}
+        version=${release%-*}
+        for rpm in $(rpm -q kernel-${flavor}) ; do
+            installed=${rpm#kernel-${flavor}-}
+            if [[ ${installed} > ${version}.1.$(uname -m) ]] ; then
+                reboottrigger = "yes"
+            fi
+        done
+    fi
+    if [ "$reboottrigger" = "yes" ]; then
 	case "$REBOOT_CMD" in
 	    "auto")
 		if [ -x /usr/sbin/rebootmgrctl ]; then
