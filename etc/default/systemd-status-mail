@@ -1,6 +1,9 @@
 # ADDRESS is the mail account to which the status mails should be send
 ADDRESS=root@localhost
 
+# FROM is the mail account used as "From:" in the mail header
+#FROM=root@myhostname
+
 # Set HOSTNAME if the system does not set it or if you need to override 
 # the system default
 #HOSTNAME=myhostname

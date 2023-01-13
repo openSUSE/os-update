@@ -23,6 +23,9 @@ hostname and the output of `systemctl status --full <service>`.
 ADDRESS="root@localhost"
 : Address to which the status mail should be send.
 
+FROM="root@myhostname"
+: Sender address of the status mail.
+
 HOSTNAME="<hostname>"
 : Name of the host used as domain for the from address (root@$HOSTNAME)
 
