@@ -133,7 +133,7 @@ zypper_dup() {
 }
 
 zypper_restart_services() {
-    if [[ $(lsof -w -a -d DEL -p 1 -Ff  | grep "^fDEL"|wc -l) > 0 ]]; then
+    if [[ $(lsof -w -a -d DEL -p 1 -Ff  | grep -c "^fDEL") -gt 0 ]]; then
         log_info "Reexecing systemd"
         systemctl daemon-reexec;
     fi
