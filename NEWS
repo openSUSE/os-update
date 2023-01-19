@@ -1,3 +1,7 @@
+Version 1.10
+ - Fix check if reboot is required
+ - Improve/fix check if systemd needs to be restarted
+
 Version 1.9
  - Minimal support for SLE12 (os-update)
  - From address now configureable (systemd-status-mail)
