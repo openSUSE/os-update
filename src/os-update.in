@@ -59,7 +59,7 @@ check_and_reboot() {
     if [ -x /usr/bin/needs-restarting ]; then
         needs-restarting -r
 	if [ $? -eq 1 ] ; then
-	    reboottrigger = "yes"
+	    reboottrigger="yes"
 	fi
     else
         release=$(uname -r)
