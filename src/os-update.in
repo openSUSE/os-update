@@ -68,7 +68,7 @@ check_and_reboot() {
         for rpm in $(rpm -q kernel-${flavor}) ; do
             installed=${rpm#kernel-${flavor}-}
             if [[ ${installed} > ${version}.1.$(uname -m) ]] ; then
-                reboottrigger = "yes"
+                reboottrigger="yes"
             fi
         done
     fi
