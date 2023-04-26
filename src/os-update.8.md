@@ -49,6 +49,9 @@ IGNORE_SERVICES_FROM_RESTART="dbus"
 SERVICES_TRIGGERING_REBOOT="dbus"
 : Specifies a list of services which trigger a reboot
 
+LOG_TAG="root"
+: Specifies a custom log identifier
+
 # CONFIGURATION FILES
 
 /usr/etc/os-update.conf
