@@ -32,13 +32,21 @@ ZYPPER_NONINTERACTIVE="-y --auto-agree-with-product-licenses"
 log_error()
 {
     echo "$@" >&2
-    logger --priority user.err "$@"
+    local LOG_ARGS="--priority user.err"
+    if [ -n "$LOG_TAG" ]; then
+        LOG_ARGS="$LOG_ARGS -t $LOG_TAG"
+    fi
+    logger ${LOG_ARGS} "$@"
 }
 
 log_info()
 {
     echo "$@"
-    logger "$@"
+    local LOG_ARGS=""
+    if [ -n "$LOG_TAG" ]; then
+        LOG_ARGS="$LOG_ARGS -t $LOG_TAG"
+    fi
+    logger ${LOG_ARGS} "$@"
 }
 
 usage() {
