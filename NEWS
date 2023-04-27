@@ -1,3 +1,7 @@
+Version 1.11
+ - Add LOG_TAG
+ - Fix reboottrigger for SLES12
+
 Version 1.10
  - Fix check if reboot is required
  - Improve/fix check if systemd needs to be restarted
