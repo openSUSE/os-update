@@ -120,12 +120,11 @@ eval_zypper_retval() {
 
     if [ "$RETVAL" -eq 0 ] || [ "$RETVAL" -eq 102 ] || [ "$RETVAL" -eq 103 ]; then
 	log_info "Update was successful"
-    elif [ "$RETVAL" -eq 106 ]; then
-	log_error "ERROR: update failed, exit code was ${RETVAL}"
-	# do check for restarts and reboot
     else
 	log_error "ERROR: update failed, exit code was ${RETVAL}"
-	exit 1
+	if [ "$RETVAL" -ne 106 ]; then
+	    exit 1
+	fi
     fi
 }
 
