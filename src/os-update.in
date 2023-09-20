@@ -24,6 +24,7 @@ REBOOT_CMD="auto"
 RESTART_SERVICES="yes"
 IGNORE_SERVICES_FROM_RESTART="dbus"
 SERVICES_TRIGGERING_REBOOT="dbus"
+RETVAL=0
 
 # Additional variables per package manager
 ZYPPER_NONINTERACTIVE="-y --auto-agree-with-product-licenses"
@@ -119,6 +120,9 @@ eval_zypper_retval() {
 
     if [ "$RETVAL" -eq 0 ] || [ "$RETVAL" -eq 102 ] || [ "$RETVAL" -eq 103 ]; then
 	log_info "Update was successful"
+    elif [ "$RETVAL" -eq 106 ]; then
+	log_error "ERROR: update failed, exit code was ${RETVAL}"
+	# do check for restarts and reboot
     else
 	log_error "ERROR: update failed, exit code was ${RETVAL}"
 	exit 1
@@ -251,4 +255,4 @@ esac
 
 check_and_reboot
 
-exit 0
+exit $RETVAL
