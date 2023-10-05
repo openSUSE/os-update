@@ -21,6 +21,7 @@ export LANG=C.UTF-8
 PKG_MANAGER="zypper"
 UPDATE_CMD="auto"
 REBOOT_CMD="auto"
+REBOOT_METHOD="reboot"
 RESTART_SERVICES="yes"
 IGNORE_SERVICES_FROM_RESTART="dbus"
 SERVICES_TRIGGERING_REBOOT="dbus"
@@ -69,6 +70,13 @@ check_and_reboot() {
         needs-restarting -r
 	if [ $? -eq 1 ] ; then
 	    reboottrigger="yes"
+	    if [ -f "/run/reboot-needed" ] && [ -s "/run/reboot-needed" ]; then
+		case $(cat /run/reboot-needed) in
+		    "soft-reboot")
+			REBOOT_METHOD="soft-reboot"
+			;;
+		esac
+	    fi
 	fi
     else
         release=$(uname -r)
@@ -86,12 +94,12 @@ check_and_reboot() {
 	    "auto")
 		if [ -x /usr/sbin/rebootmgrctl ]; then
 		    if /usr/sbin/rebootmgrctl is-active -q; then
-			/usr/sbin/rebootmgrctl reboot
+			/usr/sbin/rebootmgrctl $REBOOT_METHOD
 		    else
-			systemctl reboot
+			systemctl $REBOOT_METHOD
 		    fi
 		else
-		    systemctl reboot
+		    systemctl $REBOOT_METHOD
 		fi
 		;;
 	    "rebootmgr")
@@ -103,13 +111,13 @@ check_and_reboot() {
 		    log_error "ERROR: rebootmgrd not running"
 		    exit 1
 		fi
-		/usr/sbin/rebootmgrctl reboot
+		/usr/sbin/rebootmgrctl $REBOOT_METHOD
 		;;
 	    "reboot")
-		systemctl reboot
+		systemctl $REBOOT_METHOD
 		;;
 	    "no"|"none")
-		log_info "A reboot is required"
+		log_info "A $REBOOT_METHOD is required"
 		;;
 	esac
     fi

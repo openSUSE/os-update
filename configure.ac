@@ -23,5 +23,4 @@ PKG_CHECK_VAR([sysusersdir], [systemd], [sysusersdir], [],
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
-AC_OUTPUT([Makefile src/Makefile src/os-update \
-	   systemd/Makefile])
+AC_OUTPUT([Makefile src/Makefile src/os-update systemd/Makefile])
