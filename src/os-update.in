@@ -103,7 +103,7 @@ check_and_reboot() {
 		fi
 		;;
 	    "rebootmgr")
-		if [ -x /usr/sbin/rebootmgrctl ]; then
+		if [ ! -x /usr/sbin/rebootmgrctl ]; then
 		    log_error "ERROR: rebootmgrctl not installed"
 		    exit 1
 		fi
