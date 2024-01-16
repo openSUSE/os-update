@@ -1,0 +1,16 @@
+#!/bin/sh
+
+unitdir="${1:?}"
+
+if [ -e /usr/etc/default/systemd-status-mail ]; then
+    . /usr/etc/default/systemd-status-mail
+fi
+if [ -e /etc/default/systemd-status-mail ]; then
+    . /etc/default/systemd-status-mail
+fi
+
+for service in ${SEND_ON_FAILURE}; do
+    dropindir="${unitdir}/${service}.d/"
+    mkdir -p "${dropindir}" || exit 1
+    ln -s @maildatadir@/status-mail.conf "${dropindir}"
+done
