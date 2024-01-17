@@ -1,5 +1,5 @@
 # ADDRESS is the mail account to which the status mails should be send
-ADDRESS=root@localhost
+ADDRESS=
 
 # FROM is the mail account used as "From:" in the mail header
 #FROM=root@myhostname
@@ -16,3 +16,6 @@ ADDRESS=root@localhost
 
 # MAILX_OPTIONS specifies additional options for mailx
 #MAILX_OPTIONS="-Sverbose ..."
+
+# Space separated list of services where an email is sent on failure
+SEND_ON_FAILURE="transactional-update.service"

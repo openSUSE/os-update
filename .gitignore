@@ -54,4 +54,5 @@ src/os-update
 src/os-update.8
 src/systemd-status-mail.8
 systemd/os-update.service
-systemd-status-mail@.service
+systemd/status-mail-generator.sh
+systemd/systemd-status-mail@.service
