@@ -5,12 +5,6 @@ if [ "$#" -lt 1 -o "$#" -gt 2 ]; then
     exit 1
 fi
 
-SERVICE="$1"
-TO="root@localhost"
-if [ -n "$2" ]; then
-    TO="$2"
-fi
-
 include () {
     test -f "$1" && . "$1"
 }
@@ -19,6 +13,14 @@ include /usr/etc/default/systemd-status-mail
 include /etc/default/systemd-status-mail
 
 HOSTNAME=${HOSTNAME:-$(hostname)}
+SERVICE="$1"
+if [ -n "$2" ]; then
+    TO="$2"
+elif [ -n "$ADDRESS" ]; then
+    TO="$ADDRESS"
+else
+    TO="root@localhost"
+fi
 
 if [ -z "$FROM" ]; then
     FROM="systemd <root@$HOSTNAME>"
@@ -47,12 +49,22 @@ $(systemctl status --lines=500 --full "$SERVICE" 2>&1)
 EOF
 	;;
     mailx)
+	MAILRC=`mktemp --tmpdir systemd-status-mail-mailx-conf.XXXXXXXXXX` || exit 1
+	export MAILRC
+	echo "set sendwait" >> $MAILRC
 	if [ -n "${RELAYHOST}" ]; then
-	    RELAY="-Ssmtp=${RELAYHOST}"
+	    echo "set smtp=${RELAYHOST@Q}" >> $MAILRC
 	fi
-	mailx $MAILX_OPTIONS -Ssendwait -s "$SERVICE ($HOSTNAME)" -r "$FROM" "$RELAY" "$TO" <<EOF
+	if [ -n "${MAILX_AUTH_USER}" ]; then
+	    echo "set smtp-auth-user=${MAILX_AUTH_USER@Q}" >> $MAILRC
+	fi
+	if [ -n "${MAILX_AUTH_PASSWORD}" ]; then
+	    echo "set smtp-auth-password=${MAILX_AUTH_PASSWORD@Q}" >> $MAILRC
+	fi
+	mailx $MAILX_OPTIONS -s "$SERVICE ($HOSTNAME)" -r "$FROM" "$TO" <<EOF
 $(systemctl status --lines=500 --full "$SERVICE" 2>&1)
 EOF
+	rm $MAILRC
 	;;
     *)
 	echo "ERROR: \"$MAILER\" is not a valid entry!" >&2

@@ -14,6 +14,15 @@ ADDRESS=
 # RELAYHOST specifies the mail relay used by mailx if specified
 #RELAYHOST=relay.example.com
 
+# If the RELAYHOST requires authentication set the username here
+#MAILX_AUTH_USER=
+
+# If the RELAYHOST requires authentication set the password here
+# NOTE: If you have to set this field you should take additional
+# security measures and restrict access. The file should only be
+# readable by the "systemd-status-mail" user.
+#MAILX_AUTH_PASSWORD=
+
 # MAILX_OPTIONS specifies additional options for mailx
 #MAILX_OPTIONS="-Sverbose ..."
 
