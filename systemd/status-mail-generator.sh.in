@@ -9,6 +9,11 @@ if [ -e /etc/default/systemd-status-mail ]; then
     . /etc/default/systemd-status-mail
 fi
 
+if [ -z "${ADDRESS}" ]; then
+    echo "No email address configured for status mails - skipping."
+    exit 0
+fi
+
 for service in ${SEND_ON_FAILURE}; do
     dropindir="${unitdir}/${service}.d/"
     mkdir -p "${dropindir}" || exit 1

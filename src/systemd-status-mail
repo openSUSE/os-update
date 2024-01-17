@@ -1,13 +1,14 @@
 #!/bin/sh
 
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <mail address> <systemd unit>" >&2
+if [ "$#" -lt 1 -o "$#" -gt 2 ]; then
+    echo "Usage: $0 <systemd unit> [<mail address>]" >&2
     exit 1
 fi
 
-if [ -z "$1" ]; then
-    echo "$0: <mail address> is empty!" >&2
-    exit 1
+SERVICE="$1"
+TO="root@localhost"
+if [ -n "$2" ]; then
+    TO="$2"
 fi
 
 include () {
@@ -36,21 +37,21 @@ fi
 case $MAILER in
     sendmail)
 	/usr/sbin/sendmail -t <<EOF
-To: $1
+To: $TO
 From: $FROM
-Subject: $2 ($HOSTNAME)
+Subject: $SERVICE ($HOSTNAME)
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset=UTF-8
 
-$(systemctl status --lines=500 --full "$2" 2>&1) 
+$(systemctl status --lines=500 --full "$SERVICE" 2>&1)
 EOF
 	;;
     mailx)
 	if [ -n "${RELAYHOST}" ]; then
 	    RELAY="-Ssmtp=${RELAYHOST}"
 	fi
-	mailx $MAILX_OPTIONS -Ssendwait -s "$2 ($HOSTNAME)" -r "$FROM" "$RELAY" "$1" <<EOF
-$(systemctl status --lines=500 --full "$2" 2>&1)
+	mailx $MAILX_OPTIONS -Ssendwait -s "$SERVICE ($HOSTNAME)" -r "$FROM" "$RELAY" "$TO" <<EOF
+$(systemctl status --lines=500 --full "$SERVICE" 2>&1)
 EOF
 	;;
     *)

@@ -1,5 +1,5 @@
 # ADDRESS is the mail account to which the status mails should be send
-ADDRESS=root@localhost
+ADDRESS=
 
 # FROM is the mail account used as "From:" in the mail header
 #FROM=root@myhostname
