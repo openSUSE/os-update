@@ -3,14 +3,15 @@ systemdsystemunit_DATA = os-update.timer os-update.service \
 			 systemd-status-mail@.service
 
 systemdsystemgenerator_SCRIPTS = status-mail-generator.sh
+sysusers_DATA = systemd-status-mail.conf
 
 maildatadir=${datadir}/systemd-status-mail
-
 
 maildata_DATA = status-mail.conf
 
 EXTRA_DIST = os-update.timer os-update.service.in status-mail.conf \
-	     status-mail-generator.sh.in systemd-status-mail@.service.in
+	     status-mail-generator.sh.in systemd-status-mail@.service.in \
+	     systemd-status-mail.conf
 
 CLEANFILES = os-update.service status-mail-generator.sh \
 	     systemd-status-mail@.service
