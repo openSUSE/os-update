@@ -6,8 +6,6 @@ Documentation=https://wiki.archlinux.org/title/Systemd/Timers#MAILTO
 
 [Service]
 Type=oneshot
-EnvironmentFile=-/usr/etc/default/systemd-status-mail
-EnvironmentFile=-/etc/default/systemd-status-mail
-ExecStart=@libexec@/systemd-status-mail ${ADDRESS} %i
+ExecStart=@libexec@/systemd-status-mail %i
 User=systemd-status-mail
 Group=systemd-journal
