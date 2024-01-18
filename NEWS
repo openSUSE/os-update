@@ -1,3 +1,7 @@
+Version 1.15
+ - Add systemd generator for systemd-status-mail
+ - Add own user for status-mail service
+
 Version 1.14
  - Fix check if rebootmgrctl is installed
 
