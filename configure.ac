@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(os-update, 1.15)
+AC_INIT(os-update, 1.16)
 AM_INIT_AUTOMAKE
 AC_PREFIX_DEFAULT(/usr)
 
