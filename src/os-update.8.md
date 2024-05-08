@@ -44,10 +44,13 @@ RESTART_SERVICES="yes"
 restarted, if they are still using old libraries.
 
 IGNORE_SERVICES_FROM_RESTART="dbus"
-: Specifies a list of services which should not be restarted
+: Specifies a list of services which should not be restarted.
 
-SERVICES_TRIGGERING_REBOOT="dbus"
-: Specifies a list of services which trigger a reboot
+SERVICES_TRIGGERING_SOFT_REBOOT="dbus"
+: Specifies a list of services which trigger a soft-reboot. If anything else triggers a real reboot, a full reboot is performed.
+
+SERVICES_TRIGGERING_REBOOT=""
+: Specifies a list of services which trigger a full reboot.
 
 LOG_TAG="root"
 : Specifies a custom log identifier

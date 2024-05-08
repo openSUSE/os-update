@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2020-2023 Thorsten Kukuk <kukuk@thkukuk.de>
+# Copyright (C) 2020-2024 Thorsten Kukuk <kukuk@thkukuk.de>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,8 @@ REBOOT_CMD="auto"
 REBOOT_METHOD="reboot"
 RESTART_SERVICES="yes"
 IGNORE_SERVICES_FROM_RESTART="dbus virtlockd"
-SERVICES_TRIGGERING_REBOOT="dbus"
+SERVICES_TRIGGERING_REBOOT=""
+SERVICES_TRIGGERING_SOFT_REBOOT="dbus"
 RETVAL=0
 LOG_TAG="os-update"
 
@@ -79,9 +80,12 @@ check_and_reboot() {
 			;;
 		    *)
 			log_info "Update suggests reboot with $(cat /run/reboot-needed), using hard reboot"
+			REBOOT_METHOD="reboot"
+			;;
 		esac
 	    else
 		log_info "Update suggests reboot"
+		REBOOT_METHOD="reboot"
 	    fi
 	fi
     else
@@ -93,6 +97,7 @@ check_and_reboot() {
             if [[ ${installed} > ${version}.1.$(uname -m) ]] ; then
 		log_info "New kernel detected, trigger reboot"
                 reboottrigger="yes"
+		REBOOT_METHOD="reboot"
             fi
         done
     fi
@@ -170,10 +175,19 @@ zypper_restart_services() {
     fi
     reboottrigger="no"
     for service in $(zypper ps --print %s); do
+        for rebootservice in $SERVICES_TRIGGERING_SOFT_REBOOT; do
+            if [ "$rebootservice" = "$service" ]; then
+                log_info "$service triggers a soft-reboot as it is included in SERVICES_TRIGGERING_SOFT_REBOOT"
+		reboottrigger="yes"
+		REBOOT_METHOD="soft-reboot"
+		break
+	    fi
+	done
         for rebootservice in $SERVICES_TRIGGERING_REBOOT; do
             if [ "$rebootservice" = "$service" ]; then
                 log_info "$service triggers a reboot as it is included in SERVICES_TRIGGERING_REBOOT"
 		reboottrigger="yes"
+		REBOOT_METHOD="reboot"
 		break
 	    fi
 	done
