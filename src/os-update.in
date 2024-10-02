@@ -31,6 +31,7 @@ LOG_TAG="os-update"
 
 # Additional variables per package manager
 ZYPPER_NONINTERACTIVE="-y --auto-agree-with-product-licenses"
+ZYPPER_NOREFRESH="--no-refresh"
 
 
 log_error()
@@ -164,7 +165,11 @@ zypper_up() {
 }
 
 zypper_dup() {
-    zypper dup ${ZYPPER_NONINTERACTIVE}
+    if ! zypper refresh; then
+        log_error "ERROR: refresh failed"
+        exit 1
+    fi
+    zypper ${ZYPPER_NOREFRESH} dup ${ZYPPER_NONINTERACTIVE}
     eval_zypper_retval $?
 }
 
