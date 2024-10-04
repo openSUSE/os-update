@@ -154,21 +154,27 @@ eval_zypper_retval() {
     fi
 }
 
-zypper_security() {
-    zypper patch ${ZYPPER_NONINTERACTIVE} --category security
-    eval_zypper_retval $?
-}
-
-zypper_up() {
-    zypper up ${ZYPPER_NONINTERACTIVE}
-    eval_zypper_retval $?
-}
-
-zypper_dup() {
+zypper_refresh() {
     if ! zypper refresh; then
         log_error "ERROR: refresh failed"
         exit 1
     fi
+}
+
+zypper_security() {
+    zypper_refresh
+    zypper ${ZYPPER_NOREFRESH} patch ${ZYPPER_NONINTERACTIVE} --category security
+    eval_zypper_retval $?
+}
+
+zypper_up() {
+    zypper_refresh
+    zypper ${ZYPPER_NOREFRESH} up ${ZYPPER_NONINTERACTIVE}
+    eval_zypper_retval $?
+}
+
+zypper_dup() {
+    zypper_refresh
     zypper ${ZYPPER_NOREFRESH} dup ${ZYPPER_NONINTERACTIVE}
     eval_zypper_retval $?
 }
