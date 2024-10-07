@@ -36,216 +36,215 @@ ZYPPER_NOREFRESH="--no-refresh"
 
 log_error()
 {
-    echo "$@" >&2
-    local LOG_ARGS="--priority user.err"
-    if [ -n "$LOG_TAG" ]; then
-        LOG_ARGS="$LOG_ARGS -t $LOG_TAG"
-    fi
-    logger ${LOG_ARGS} "$@"
+	echo "$@" >&2
+	local LOG_ARGS="--priority user.err"
+	if [ -n "$LOG_TAG" ]; then
+		LOG_ARGS="$LOG_ARGS -t $LOG_TAG"
+	fi
+	logger ${LOG_ARGS} "$@"
 }
 
 log_info()
 {
-    echo "$@"
-    local LOG_ARGS=""
-    if [ -n "$LOG_TAG" ]; then
-        LOG_ARGS="$LOG_ARGS -t $LOG_TAG"
-    fi
-    logger ${LOG_ARGS} "$@"
+	echo "$@"
+	local LOG_ARGS=""
+	if [ -n "$LOG_TAG" ]; then
+		LOG_ARGS="$LOG_ARGS -t $LOG_TAG"
+	fi
+	logger ${LOG_ARGS} "$@"
 }
 
 usage() {
-    echo "Syntax: os-update"
-    echo ""
-    echo "Update the system with automatic reboot if required."
-    echo ""
-    echo "Options:"
-    echo "--help, -h                 Display this help and exit"
-    echo "--version                  Display version and exit"
+	echo "Syntax: os-update"
+	echo ""
+	echo "Update the system with automatic reboot if required."
+	echo ""
+	echo "Options:"
+	echo "--help, -h                 Display this help and exit"
+	echo "--version                  Display version and exit"
 }
 
 print_version() {
-    echo "os-update @VERSION@"
+	echo "os-update @VERSION@"
 }
 
 check_and_reboot() {
-    if [ -x /usr/bin/needs-restarting ]; then
-        needs-restarting -r
-	if [ $? -eq 1 ] ; then
-	    reboottrigger="yes"
-	    if [ -f "/run/reboot-needed" ] && [ -s "/run/reboot-needed" ]; then
-		case $(cat /run/reboot-needed) in
-		    "soft-reboot")
-			log_info "Update suggests reboot with soft-reboot"
-			REBOOT_METHOD="soft-reboot"
+	if [ -x /usr/bin/needs-restarting ]; then
+		needs-restarting -r
+		if [ $? -eq 1 ] ; then
+			reboottrigger="yes"
+			if [ -f "/run/reboot-needed" ] && [ -s "/run/reboot-needed" ]; then
+				case $(cat /run/reboot-needed) in
+					"soft-reboot")
+						log_info "Update suggests reboot with soft-reboot"
+						REBOOT_METHOD="soft-reboot"
+					;;
+					*)
+						log_info "Update suggests reboot with $(cat /run/reboot-needed), using hard reboot"
+						REBOOT_METHOD="reboot"
+					;;
+				esac
+			else
+				log_info "Update suggests reboot"
+				REBOOT_METHOD="reboot"
+			fi
+		fi
+	else
+		release=$(uname -r)
+		flavor=${release##*-}
+		version=${release%-*}
+		for rpm in $(rpm -q kernel-${flavor}) ; do
+			installed=${rpm#kernel-${flavor}-}
+			if [[ ${installed} > ${version}.1.$(uname -m) ]] ; then
+				log_info "New kernel detected, trigger reboot"
+				reboottrigger="yes"
+				REBOOT_METHOD="reboot"
+			fi
+		done
+	fi
+	if [ "$reboottrigger" = "yes" ]; then
+		case "$REBOOT_CMD" in
+			"auto")
+				if [ -x /usr/sbin/rebootmgrctl ]; then
+					if /usr/sbin/rebootmgrctl is-active -q; then
+						log_info "Trigger reboot with rebootmgrctl $REBOOT_METHOD"
+						/usr/sbin/rebootmgrctl $REBOOT_METHOD
+					else
+						log_info "Trigger reboot with systemctl $REBOOT_METHOD"
+						systemctl $REBOOT_METHOD
+					fi
+				else
+					log_info "Trigger reboot with systemctl $REBOOT_METHOD"
+					systemctl $REBOOT_METHOD
+				fi
 			;;
-		    *)
-			log_info "Update suggests reboot with $(cat /run/reboot-needed), using hard reboot"
-			REBOOT_METHOD="reboot"
+			"rebootmgr")
+				if [ ! -x /usr/sbin/rebootmgrctl ]; then
+					log_error "ERROR: rebootmgrctl not installed"
+					exit 1
+				fi
+				if ! /usr/sbin/rebootmgrctl is-active -q; then
+					log_error "ERROR: rebootmgrd not running"
+					exit 1
+				fi
+				log_info "Trigger reboot with rebootmgrctl $REBOOT_METHOD"
+				/usr/sbin/rebootmgrctl $REBOOT_METHOD
+			;;
+			"reboot")
+				log_info "Trigger reboot with systemctl $REBOOT_METHOD"
+				systemctl $REBOOT_METHOD
+			;;
+			"no"|"none")
+				log_info "A $REBOOT_METHOD is required"
 			;;
 		esac
-	    else
-		log_info "Update suggests reboot"
-		REBOOT_METHOD="reboot"
-	    fi
 	fi
-    else
-        release=$(uname -r)
-        flavor=${release##*-}
-        version=${release%-*}
-        for rpm in $(rpm -q kernel-${flavor}) ; do
-            installed=${rpm#kernel-${flavor}-}
-            if [[ ${installed} > ${version}.1.$(uname -m) ]] ; then
-		log_info "New kernel detected, trigger reboot"
-                reboottrigger="yes"
-		REBOOT_METHOD="reboot"
-            fi
-        done
-    fi
-    if [ "$reboottrigger" = "yes" ]; then
-	case "$REBOOT_CMD" in
-	    "auto")
-		if [ -x /usr/sbin/rebootmgrctl ]; then
-		    if /usr/sbin/rebootmgrctl is-active -q; then
-			log_info "Trigger reboot with rebootmgrctl $REBOOT_METHOD"
-			/usr/sbin/rebootmgrctl $REBOOT_METHOD
-		    else
-			log_info "Trigger reboot with systemctl $REBOOT_METHOD"
-			systemctl $REBOOT_METHOD
-		    fi
-		else
-		    log_info "Trigger reboot with systemctl $REBOOT_METHOD"
-		    systemctl $REBOOT_METHOD
-		fi
-		;;
-	    "rebootmgr")
-		if [ ! -x /usr/sbin/rebootmgrctl ]; then
-		    log_error "ERROR: rebootmgrctl not installed"
-		    exit 1
-		fi
-		if ! /usr/sbin/rebootmgrctl is-active -q; then
-		    log_error "ERROR: rebootmgrd not running"
-		    exit 1
-		fi
-		log_info "Trigger reboot with rebootmgrctl $REBOOT_METHOD"
-		/usr/sbin/rebootmgrctl $REBOOT_METHOD
-		;;
-	    "reboot")
-		log_info "Trigger reboot with systemctl $REBOOT_METHOD"
-		systemctl $REBOOT_METHOD
-		;;
-	    "no"|"none")
-		log_info "A $REBOOT_METHOD is required"
-		;;
-	esac
-    fi
 }
 
 eval_zypper_retval() {
-    RETVAL=$1
+	RETVAL=$1
 
-    if [ "$RETVAL" -eq 0 ] || [ "$RETVAL" -eq 102 ] || [ "$RETVAL" -eq 103 ]; then
-	log_info "Update was successful"
-    else
-	log_error "ERROR: update failed, exit code was ${RETVAL}"
-	if [ "$RETVAL" -ne 106 ]; then
-	    exit 1
+	if [ "$RETVAL" -eq 0 ] || [ "$RETVAL" -eq 102 ] || [ "$RETVAL" -eq 103 ]; then
+		log_info "Update was successful"
+	else
+		log_error "ERROR: update failed, exit code was ${RETVAL}"
+		if [ "$RETVAL" -ne 106 ]; then
+			exit 1
+		fi
 	fi
-    fi
 }
 
 zypper_refresh() {
-    if ! zypper refresh; then
-        log_error "ERROR: refresh failed"
-        exit 1
-    fi
+	if ! zypper refresh; then
+		log_error "ERROR: refresh failed"
+		exit 1
+	fi
 }
 
 zypper_security() {
-    zypper_refresh
-    zypper ${ZYPPER_NOREFRESH} patch ${ZYPPER_NONINTERACTIVE} --category security
-    eval_zypper_retval $?
+	zypper_refresh
+	zypper ${ZYPPER_NOREFRESH} patch ${ZYPPER_NONINTERACTIVE} --category security
+	eval_zypper_retval $?
 }
 
 zypper_up() {
-    zypper_refresh
-    zypper ${ZYPPER_NOREFRESH} up ${ZYPPER_NONINTERACTIVE}
-    eval_zypper_retval $?
+	zypper_refresh
+	zypper ${ZYPPER_NOREFRESH} up ${ZYPPER_NONINTERACTIVE}
+	eval_zypper_retval $?
 }
 
 zypper_dup() {
-    zypper_refresh
-    zypper ${ZYPPER_NOREFRESH} dup ${ZYPPER_NONINTERACTIVE}
-    eval_zypper_retval $?
+	zypper_refresh
+	zypper ${ZYPPER_NOREFRESH} dup ${ZYPPER_NONINTERACTIVE}
+	eval_zypper_retval $?
 }
 
 zypper_restart_services() {
-    if [[ $(lsof -w -a -d DEL -p 1 -Ff  | grep -c "^fDEL") -gt 0 ]]; then
-        log_info "Reexecing systemd"
-        systemctl daemon-reexec;
-    fi
-    reboottrigger="no"
-    for service in $(zypper ps --print %s); do
-        for rebootservice in $SERVICES_TRIGGERING_SOFT_REBOOT; do
-            if [ "$rebootservice" = "$service" ]; then
-                log_info "$service triggers a soft-reboot as it is included in SERVICES_TRIGGERING_SOFT_REBOOT"
-		reboottrigger="yes"
-		REBOOT_METHOD="soft-reboot"
-		break
-	    fi
-	done
-        for rebootservice in $SERVICES_TRIGGERING_REBOOT; do
-            if [ "$rebootservice" = "$service" ]; then
-                log_info "$service triggers a reboot as it is included in SERVICES_TRIGGERING_REBOOT"
-		reboottrigger="yes"
-		REBOOT_METHOD="reboot"
-		break
-	    fi
-	done
-        for ignore in $IGNORE_SERVICES_FROM_RESTART; do
-            if [ "$ignore" = "$service" ]; then
-                log_info "Not restarting $service as it is excluded in IGNORE_SERVICES_FROM_RESTART"
-		break
-	    fi
-	done
-        if [ "$ignore" != "$service" ] && [ "$service" != "os-update" ]; then
-	    log_info "Restarting $service"
-            systemctl try-restart "$service".service
+	if [[ $(lsof -w -a -d DEL -p 1 -Ff | grep -c "^fDEL") -gt 0 ]]; then
+		log_info "Reexecing systemd"
+		systemctl daemon-reexec
 	fi
-    done
+	reboottrigger="no"
+	for service in $(zypper ps --print %s); do
+		for rebootservice in $SERVICES_TRIGGERING_SOFT_REBOOT; do
+			if [ "$rebootservice" = "$service" ]; then
+				log_info "$service triggers a soft-reboot as it is included in SERVICES_TRIGGERING_SOFT_REBOOT"
+				reboottrigger="yes"
+				REBOOT_METHOD="soft-reboot"
+				break
+			fi
+		done
+		for rebootservice in $SERVICES_TRIGGERING_REBOOT; do
+			if [ "$rebootservice" = "$service" ]; then
+				log_info "$service triggers a reboot as it is included in SERVICES_TRIGGERING_REBOOT"
+				reboottrigger="yes"
+				REBOOT_METHOD="reboot"
+				break
+			fi
+		done
+		for ignore in $IGNORE_SERVICES_FROM_RESTART; do
+			if [ "$ignore" = "$service" ]; then
+				log_info "Not restarting $service as it is excluded in IGNORE_SERVICES_FROM_RESTART"
+				break
+			fi
+		done
+		if [ "$ignore" != "$service" ] && [ "$service" != "os-update" ]; then
+			log_info "Restarting $service"
+			systemctl try-restart "$service".service
+		fi
+	done
 }
 
 run_zypper() {
-
-    case "$UPDATE_CMD" in
-	auto)
-	    . /etc/os-release
-	    case "$NAME" in
-		"SLES"|"openSUSE Leap")
-		    zypper_up
-		    ;;
-		"openSUSE Tumbleweed")
-		    zypper_dup
-		    ;;
+	case "$UPDATE_CMD" in
+		auto)
+			. /etc/os-release
+			case "$NAME" in
+				"SLES"|"openSUSE Leap")
+					zypper_up
+				;;
+				"openSUSE Tumbleweed")
+					zypper_dup
+				;;
+				*)
+					log_error "ERROR: your OS is not supported in 'auto' mode"
+				;;
+			esac
+		;;
+		dup)
+			zypper_dup
+		;;
+		up)
+			zypper_up
+		;;
+		security)
+			zypper_security
+		;;
 		*)
-		    log_error "ERROR: your OS is not supported in 'auto' mode"
-		    ;;
-	    esac
-	    ;;
-	dup)
-	    zypper_dup
-	    ;;
-	up)
-	    zypper_up
-	    ;;
-	security)
-	    zypper_security
-	    ;;
-	*)
-	    log_error "ERROR: UPDATE_CMD ($UPDATE_CMD) unknown"
-	    exit 1
-	    ;;
-    esac
+			log_error "ERROR: UPDATE_CMD ($UPDATE_CMD) unknown"
+			exit 1
+		;;
+	esac
 }
 
 #
@@ -253,47 +252,47 @@ run_zypper() {
 #
 
 while true; do
-    if [ $# -eq 0 ]; then
-        break
-    fi
+	if [ $# -eq 0 ]; then
+		break
+	fi
 
-    case "$1" in
-	-h|--help)
-            usage
-	    exit 0
-            ;;
-        --version)
-            print_version
-	    exit 0
-            ;;
-        *)
-            usage
-	    exit 1
-            ;;
-    esac
+	case "$1" in
+		-h|--help)
+			usage
+			exit 0
+		;;
+		--version)
+			print_version
+			exit 0
+		;;
+		*)
+			usage
+			exit 1
+		;;
+	esac
 done
 
 if [ $# -ne 0 ]; then
-    usage
-    exit 1
+	usage
+	exit 1
 fi
 
 # Read configuration variables
 
 # Overwrite with vendor specific values if exist:
 if [ -e /usr/etc/os-update.conf ]; then
-  . /usr/etc/os-update.conf
+	. /usr/etc/os-update.conf
 fi
 # Overwrite with admin specific values if exist:
 if [ -e /etc/os-update.conf ]; then
-  . /etc/os-update.conf
+	. /etc/os-update.conf
 fi
 
 run_${PKG_MANAGER}
 
 case "$RESTART_SERVICES" in
-    [yY]*)
-	zypper_restart_services
+	[yY]*)
+		zypper_restart_services
 	;;
 esac
 
