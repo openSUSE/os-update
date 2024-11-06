@@ -1,3 +1,7 @@
+Version 1.18
+- Move vendor config to /usr/share/os-update
+- Refresh before update, don't update if not all repositories are accessible
+
 Version 1.17
 - Implement soft-reboot support for non restartable services
 

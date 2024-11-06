@@ -3,11 +3,7 @@ libexec_SCRIPTS = os-update systemd-status-mail
 
 man_MANS = os-update.8 systemd-status-mail.8
 
-if HAVE_VENDORDIR
-configdir=@vendordir@
-else
-configdir=${sysconfdir}
-endif
+configdir=/usr/share/os-update
 
 config_DATA = os-update.conf
 
