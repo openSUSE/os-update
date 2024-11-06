@@ -30,7 +30,7 @@ Additional there is a tool `systemd-mail-status` which implements "MAILTO of cro
 **SERVICES_TRIGGERING_REBOOT**="dbus" : Specifies a list of services which trigger a reboot
 
 ## CONFIGURATION FILES
-**/usr/etc/os-update.conf** - Vendor provided configuration file, contains the defaults.
+**/usr/share/os-update/os-update.conf** - Vendor provided configuration file, contains the defaults.
 
 **/etc/os-update.conf** - Admin provided configuration file, should only contain the variables which were changed by the system administrator compared to the vendor configuration file.
 

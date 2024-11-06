@@ -280,6 +280,11 @@ fi
 # Read configuration variables
 
 # Overwrite with vendor specific values if exist:
+# New vendor config
+if [ -e /usr/share/os-update/os-update.conf ]; then
+  . /usr/share/os-update/os-update.conf
+fi
+# Outdated config directory
 if [ -e /usr/etc/os-update.conf ]; then
 	. /usr/etc/os-update.conf
 fi

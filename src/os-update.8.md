@@ -57,7 +57,7 @@ LOG_TAG="root"
 
 # CONFIGURATION FILES
 
-/usr/etc/os-update.conf
+/usr/share/os-update/os-update.conf
 :  Vendor provided configuration file, contains the defaults.
 
 /etc/os-update.conf
