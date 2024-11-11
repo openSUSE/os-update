@@ -1,3 +1,8 @@
+Version 1.19
+- Don't hardcode path to rebootmgrctl command
+- Don't try to restart dbus-broker, soft-reboot instead
+- Example config should only contain comments and not override application defaults
+
 Version 1.18
 - Move vendor config to /usr/share/os-update
 - Refresh before update, don't update if not all repositories are accessible
