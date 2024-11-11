@@ -93,8 +93,8 @@ check_and_reboot() {
 		release=$(uname -r)
 		flavor=${release##*-}
 		version=${release%-*}
-		for rpm in $(rpm -q kernel-${flavor}) ; do
-			installed=${rpm#kernel-${flavor}-}
+		for rpm in $(rpm -q "kernel-${flavor}") ; do
+			installed=${rpm#kernel-"${flavor}"-}
 			if [[ ${installed} > ${version}.1.$(uname -m) ]] ; then
 				log_info "New kernel detected, trigger reboot"
 				reboottrigger="yes"
@@ -103,12 +103,13 @@ check_and_reboot() {
 		done
 	fi
 	if [ "$reboottrigger" = "yes" ]; then
+	    REBOOTMGRCTL_CMD=$(command -v rebootmgrctl)
 		case "$REBOOT_CMD" in
 			"auto")
-				if [ -x /usr/sbin/rebootmgrctl ]; then
-					if /usr/sbin/rebootmgrctl is-active -q; then
+				if [ -n "$REBOOTMGRCTL_CMD" ]; then
+					if "$REBOOTMGRCTL_CMD" is-active -q; then
 						log_info "Trigger reboot with rebootmgrctl $REBOOT_METHOD"
-						/usr/sbin/rebootmgrctl $REBOOT_METHOD
+						"$REBOOTMGRCTL_CMD" $REBOOT_METHOD
 					else
 						log_info "Trigger reboot with systemctl $REBOOT_METHOD"
 						systemctl $REBOOT_METHOD
@@ -119,16 +120,16 @@ check_and_reboot() {
 				fi
 			;;
 			"rebootmgr")
-				if [ ! -x /usr/sbin/rebootmgrctl ]; then
+				if [ -z "$REBOOTMGRCTL_CMD" ]; then
 					log_error "ERROR: rebootmgrctl not installed"
 					exit 1
 				fi
-				if ! /usr/sbin/rebootmgrctl is-active -q; then
+				if ! "$REBOOTMGRCTL_CMD" is-active -q; then
 					log_error "ERROR: rebootmgrd not running"
 					exit 1
 				fi
 				log_info "Trigger reboot with rebootmgrctl $REBOOT_METHOD"
-				/usr/sbin/rebootmgrctl $REBOOT_METHOD
+				"$REBOOTMGRCTL_CMD" $REBOOT_METHOD
 			;;
 			"reboot")
 				log_info "Trigger reboot with systemctl $REBOOT_METHOD"
