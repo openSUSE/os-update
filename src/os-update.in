@@ -22,6 +22,7 @@ PKG_MANAGER="zypper"
 UPDATE_CMD="auto"
 REBOOT_CMD="auto"
 REBOOT_METHOD="reboot"
+IGNORE_SERVICES=""
 RESTART_SERVICES="yes"
 IGNORE_SERVICES_FROM_RESTART="dbus dbus-broker virtlockd"
 SERVICES_TRIGGERING_REBOOT=""
@@ -187,6 +188,17 @@ zypper_restart_services() {
 	fi
 	reboottrigger="no"
 	for service in $(zypper ps --print %s); do
+	        do_ignore=0
+		for ignore in $IGNORE_SERVICES; do
+			if [ "$ignore" = "$service" ]; then
+				log_info "Ignoring $service as it is excluded in IGNORE_SERVICES"
+				do_ignore=1
+				break
+			fi
+		done
+		if [ $do_ignore ]; then
+		    continue
+		fi
 		for rebootservice in $SERVICES_TRIGGERING_SOFT_REBOOT; do
 			if [ "$rebootservice" = "$service" ]; then
 				log_info "$service triggers a soft-reboot as it is included in SERVICES_TRIGGERING_SOFT_REBOOT"
