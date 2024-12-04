@@ -1,5 +1,5 @@
-% os-update(8)
-% Thorsten Kukuk `<kukuk@thkukuk.de>`
+os-update 8 "December 2024" os-update "System Manager's Manual "
+================================================================
 
 # NAME
 
@@ -7,9 +7,9 @@
 
 # SYNOPSIS
 
-| **/usr/libexec/os-update**
-| **/usr/lib/systemd/system/os-update.service**
-| **/usr/lib/systemd/system/os-update.timer**
+**/usr/libexec/os-update**  
+**/usr/lib/systemd/system/os-update.service**  
+**/usr/lib/systemd/system/os-update.timer**  
 
 # DESCRIPTION
 
@@ -43,10 +43,13 @@ RESTART_SERVICES="yes"
 : Specifies if after a successful update services should automatically
 restarted, if they are still using old libraries.
 
-IGNORE_SERVICES_FROM_RESTART="dbus"
+IGNORE_SERVICES=""
+: Specifies a list of services which should be ignored. Means they will neither get restarted nor trigger a reboot, even if they are mentioned in such a list.
+
+IGNORE_SERVICES_FROM_RESTART="dbus dbus-broker"
 : Specifies a list of services which should not be restarted.
 
-SERVICES_TRIGGERING_SOFT_REBOOT="dbus"
+SERVICES_TRIGGERING_SOFT_REBOOT="dbus dbus-broker"
 : Specifies a list of services which trigger a soft-reboot. If anything else triggers a real reboot, a full reboot is performed.
 
 SERVICES_TRIGGERING_REBOOT=""
@@ -67,3 +70,6 @@ file.
 
 # SEE ALSO
 systemd.timer(5), systemd-status-mail(8)
+
+# AUTHORS
+Thorsten Kukuk

@@ -1,5 +1,5 @@
-% systemd-status-mail(8)
-% Thorsten Kukuk `<kukuk@thkukuk.de>`
+systemd-status-mail 8 "December 2024" os-update "System Manager's Manual "
+==========================================================================
 
 # NAME
 
@@ -7,8 +7,8 @@
 
 # SYNOPSIS
 
-| **/usr/libexec/systemd-status-mail**
-| **/usr/lib/systemd/system/systemd-status-mail@.service**
+**/usr/libexec/systemd-status-mail**  
+**/usr/lib/systemd/system/systemd-status-mail@.service**
 
 # DESCRIPTION
 
@@ -64,3 +64,6 @@ Everytime the os-update.service fails, a mail is send.
 
 # SEE ALSO
 os-update(8), mailx(1), sendmail(1), postfix(1)
+
+# AUTHOR
+Thorsten Kukuk
