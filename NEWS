@@ -1,3 +1,7 @@
+Version 1.20
+- Switch from pandoc to go-md2man
+- Add option to ignore services at all
+
 Version 1.19
 - Don't hardcode path to rebootmgrctl command
 - Don't try to restart dbus-broker, soft-reboot instead

@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(os-update, 1.19)
+AC_INIT([os-update],[1.20])
 AM_INIT_AUTOMAKE
 AC_PREFIX_DEFAULT(/usr)
 
@@ -18,4 +18,5 @@ PKG_CHECK_VAR([sysusersdir], [systemd], [sysusersdir], [],
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
-AC_OUTPUT([Makefile src/Makefile src/os-update systemd/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile src/os-update systemd/Makefile])
+AC_OUTPUT
