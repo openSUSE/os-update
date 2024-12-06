@@ -196,7 +196,7 @@ zypper_restart_services() {
 				break
 			fi
 		done
-		if [ $do_ignore ]; then
+		if [ $do_ignore -eq 1 ]; then
 		    continue
 		fi
 		for rebootservice in $SERVICES_TRIGGERING_SOFT_REBOOT; do
