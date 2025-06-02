@@ -3,7 +3,7 @@ systemd-status-mail 8 "December 2024" os-update "System Manager's Manual "
 
 # NAME
 
-**systemd-status-mail** - Send a mail if a systemd.timer fails
+**systemd-status-mail** - Send a mail if a systemd.unit fails
 
 # SYNOPSIS
 
@@ -38,6 +38,11 @@ RELAYHOST=""
 
 MAILX_OPTIONS=""
 : Additional options passed to mailx(1)
+
+SEND_ON_FAILURE="transactional-update.service"
+: List of services which will be handled by the systemd.generator without the
+need of creating static overrides. You can list the generated units with
+"systemctl list-units 'systemd-status-mail@*' --all".
 
 # CONFIGURATION FILES
 
