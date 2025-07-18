@@ -1,5 +1,5 @@
 [Unit]
-Description=Update of system timer
+Description=Daily update of Host OS
 After=network.target local-fs.target
 Wants=network-online.target
 Conflicts=transactional-update.timer
