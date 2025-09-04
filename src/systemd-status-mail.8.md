@@ -44,6 +44,11 @@ SEND_ON_FAILURE="transactional-update.service"
 need of creating static overrides. You can list the generated units with
 "systemctl list-units 'systemd-status-mail@*' --all".
 
+NUMLINES=500
+: In case a service fails the mail will contain the service's log output; to
+limit the mail's size by default only the last 500 lines will be added to the
+mail's contents.
+
 # CONFIGURATION FILES
 
 /usr/etc/default/systemd-status-mail

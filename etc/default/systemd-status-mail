@@ -28,3 +28,6 @@ ADDRESS=
 
 # Space separated list of services where an email is sent on failure
 SEND_ON_FAILURE="transactional-update.service"
+
+# Maximum number of log lines attached to the failed service mail
+NUMLINES=500

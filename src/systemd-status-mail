@@ -45,7 +45,7 @@ Subject: $SERVICE ($HOSTNAME)
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset=UTF-8
 
-$(systemctl status --lines=500 --full "$SERVICE" 2>&1)
+$(systemctl status --lines="$NUMLINES" --full "$SERVICE" 2>&1)
 EOF
 	;;
     mailx)
