@@ -236,7 +236,7 @@ run_zypper() {
 				"SLES"|"openSUSE Leap")
 					zypper_up
 				;;
-				"openSUSE Tumbleweed")
+				"openSUSE Tumbleweed"|"openSUSE Tumbleweed-Slowroll")
 					zypper_dup
 				;;
 				*)
